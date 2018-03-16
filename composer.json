@@ -1,0 +1,27 @@
+{
+  "name": "sayla/bindings",
+  "description": "A framework agnostic way of defining container bindings/entries",
+  "keywords": [
+    "sayla"
+  ],
+  "require": {
+    "php": ">=7.1",
+    "psr/container": "^1.0"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Sayla\\Support\\Bindings\\": "src"
+    }
+  },
+  "suggest": {
+    "illuminate/contracts": "Allows use of LaravelRegistrar"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "stable"
+}
