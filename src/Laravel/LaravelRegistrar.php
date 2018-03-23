@@ -58,7 +58,7 @@ class LaravelRegistrar extends BaseRegistrar
 
     public function register(BindingProvider ...$providers)
     {
-        parent::register($providers);
+        parent::register(...$providers);
         if (!empty($this->tags)) {
             $this->registerTags($this->abstracts, $this->tags);
         }
@@ -97,7 +97,7 @@ class LaravelRegistrar extends BaseRegistrar
      * @param $abstracts
      * @param $tags
      */
-    public function registerTags(array $abstracts, array $tags)
+    protected function registerTags(array $abstracts, array $tags)
     {
         $this->container->tag($abstracts, $tags);
     }
