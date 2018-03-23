@@ -5,9 +5,9 @@ namespace Sayla\Support\Bindings;
 abstract class BaseRegistrar implements Registrar
 {
     use RegistrarTrait;
-    private $useSingletons = false;
-    private $abstracts = [];
-    private $aliases = [];
+    protected $useSingletons = false;
+    protected $abstracts = [];
+    protected $aliases = [];
 
     public function boot(BindingProvider ...$providers)
     {

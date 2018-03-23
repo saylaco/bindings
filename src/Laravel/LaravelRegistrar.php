@@ -11,6 +11,7 @@ class LaravelRegistrar extends BaseRegistrar
 {
     /** @var \Illuminate\Contracts\Container\Container */
     private $container;
+    protected $tags = [];
 
     public function __construct(Container $container)
     {
@@ -55,6 +56,14 @@ class LaravelRegistrar extends BaseRegistrar
         }
     }
 
+    public function register(BindingProvider ...$providers)
+    {
+        parent::register($providers);
+        if (!empty($this->tags)) {
+            $this->registerTags($this->abstracts, $this->tags);
+        }
+    }
+
     protected function registerProvider(BindingProvider $provider, string $alias): void
     {
         if ($this->container instanceof \Illuminate\Contracts\Foundation\Application
@@ -91,5 +100,15 @@ class LaravelRegistrar extends BaseRegistrar
     public function registerTags(array $abstracts, array $tags)
     {
         $this->container->tag($abstracts, $tags);
+    }
+
+    /**
+     * @param string[] $tags
+     * @return \Sayla\Support\Bindings\Laravel\LaravelRegistrar
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+        return $this;
     }
 }
