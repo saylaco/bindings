@@ -15,7 +15,7 @@ abstract class LaravelServiceProvider extends ServiceProvider
         $this->bindingRegistrar()->boot($this->bindingProvider());
     }
 
-    protected function bindingRegistrar(): Registrar
+    protected function bindingRegistrar(): LaravelRegistrar
     {
         return LaravelRegistrar::getInstance($this->app);
     }
