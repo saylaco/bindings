@@ -3,7 +3,6 @@
 namespace Sayla\Support\Bindings\Laravel;
 
 use Illuminate\Support\ServiceProvider;
-use Sayla\Support\Bindings\Registrar;
 
 
 abstract class LaravelServiceProvider extends ServiceProvider
@@ -15,7 +14,10 @@ abstract class LaravelServiceProvider extends ServiceProvider
         $this->bindingRegistrar()->boot($this->bindingProvider());
     }
 
-    protected function bindingRegistrar(): LaravelRegistrar
+    /**
+     * @return \Sayla\Support\Bindings\Laravel\LaravelRegistrar
+     */
+    protected function bindingRegistrar()
     {
         return LaravelRegistrar::getInstance($this->app);
     }
