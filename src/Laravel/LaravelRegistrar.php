@@ -9,9 +9,9 @@ use Sayla\Support\Bindings\BindingProvider;
 
 class LaravelRegistrar extends BaseRegistrar
 {
+    protected $tags = [];
     /** @var \Illuminate\Contracts\Container\Container */
     private $container;
-    protected $tags = [];
 
     public function __construct(Container $container)
     {
@@ -37,6 +37,14 @@ class LaravelRegistrar extends BaseRegistrar
         $booter($this->container, $qualifiedAlias);
     }
 
+    public function register(BindingProvider ...$providers)
+    {
+        parent::register(...$providers);
+        if (!empty($this->tags)) {
+            $this->registerTags($this->abstracts, $this->tags);
+        }
+    }
+
     /**
      * @param \Illuminate\Contracts\Container\Container $container
      * @param $isSingleton
@@ -53,14 +61,6 @@ class LaravelRegistrar extends BaseRegistrar
             $this->registerSingletonBinding($abstract, $resolver);
         } else {
             $this->registerSimpleBinding($abstract, $resolver);
-        }
-    }
-
-    public function register(BindingProvider ...$providers)
-    {
-        parent::register(...$providers);
-        if (!empty($this->tags)) {
-            $this->registerTags($this->abstracts, $this->tags);
         }
     }
 

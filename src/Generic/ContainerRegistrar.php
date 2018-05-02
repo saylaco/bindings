@@ -28,6 +28,11 @@ abstract class ContainerRegistrar implements Registrar
         }
     }
 
+    protected function callBooter(callable $booter, string $qualifiedAlias)
+    {
+        $booter($this->container, $qualifiedAlias);
+    }
+
     /**
      * @param \Sayla\ContainerBindings\BindingProvider[] ...$providers
      * @return void
@@ -37,11 +42,6 @@ abstract class ContainerRegistrar implements Registrar
         foreach ($providers as $provider) {
             $this->addResolvers($this->getProviderResolvers($provider), $provider);
         }
-    }
-
-    protected function callBooter(callable $booter, string $qualifiedAlias)
-    {
-        $booter($this->container, $qualifiedAlias);
     }
 
     /**
