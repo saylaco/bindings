@@ -9,6 +9,7 @@ use Sayla\Support\Bindings\BindingProvider;
 
 class LaravelRegistrar extends BaseRegistrar
 {
+    protected $tags = [];
     /** @var \Illuminate\Contracts\Container\Container */
     private $container;
 
@@ -24,16 +25,26 @@ class LaravelRegistrar extends BaseRegistrar
 
     protected function bootProvider(BindingProvider $provider, string $alias): void
     {
-        if ($this->container instanceof \Illuminate\Contracts\Foundation\Application
-            && method_exists($provider, 'booted')) {
-            $this->container->booted([$provider, 'booted']);
-        }
         parent::bootProvider($provider, $alias);
     }
 
     protected function callBooter(callable $booter, string $qualifiedAlias)
     {
         $booter($this->container, $qualifiedAlias);
+    }
+
+    public function register(BindingProvider ...$providers)
+    {
+        if ($this->container instanceof \Illuminate\Contracts\Foundation\Application) {
+            foreach ($providers as $provider)
+                if (method_exists($provider, 'booted')) {
+                    $this->container->booted([$provider, 'booted']);
+                }
+        }
+        parent::register(...$providers);
+        if (!empty($this->tags)) {
+            $this->registerTags($this->abstracts, $this->tags);
+        }
     }
 
     /**
@@ -88,8 +99,18 @@ class LaravelRegistrar extends BaseRegistrar
      * @param $abstracts
      * @param $tags
      */
-    public function registerTags(array $abstracts, array $tags)
+    protected function registerTags(array $abstracts, array $tags)
     {
         $this->container->tag($abstracts, $tags);
+    }
+
+    /**
+     * @param string[] $tags
+     * @return \Sayla\Support\Bindings\Laravel\LaravelRegistrar
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+        return $this;
     }
 }
