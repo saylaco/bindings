@@ -12,6 +12,8 @@ class LaravelRegistrar extends BaseRegistrar
     protected $tags = [];
     /** @var \Illuminate\Contracts\Container\Container */
     private $container;
+    /** @var \Illuminate\Contracts\Container\Container */
+    private $instance;
 
     public function __construct(Container $container)
     {
@@ -36,10 +38,16 @@ class LaravelRegistrar extends BaseRegistrar
     public function register(BindingProvider ...$providers)
     {
         if ($this->container instanceof \Illuminate\Contracts\Foundation\Application) {
-            foreach ($providers as $provider)
+            foreach ($providers as $provider) {
                 if (method_exists($provider, 'booted')) {
                     $this->container->booted([$provider, 'booted']);
                 }
+                if (method_exists($provider, 'booting')) {
+                    $this->container->booting(function () use ($provider) {
+                        call_user_func([$provider, 'booting'], $this->container, $this->aliases);
+                    });
+                }
+            }
         }
         parent::register(...$providers);
         if (!empty($this->tags)) {
@@ -66,13 +74,14 @@ class LaravelRegistrar extends BaseRegistrar
         }
     }
 
-    protected function registerProvider(BindingProvider $provider, string $alias): void
+    /**
+     * @param \Illuminate\Contracts\Container\Container $container
+     * @param string $abstract
+     * @param callable|null $resolver
+     */
+    protected function registerSimpleBinding(string $abstract, ?callable $resolver)
     {
-        if ($this->container instanceof \Illuminate\Contracts\Foundation\Application
-            && method_exists($provider, 'booting')) {
-            $this->container->booting([$provider, 'booting']);
-        }
-        parent::registerProvider($provider, $alias);
+        $this->container->bind($abstract, $resolver);
     }
 
     /**
@@ -82,16 +91,6 @@ class LaravelRegistrar extends BaseRegistrar
     protected function registerSingletonBinding(string $abstract, ?callable $resolver)
     {
         $this->container->singleton($abstract, $resolver);
-    }
-
-    /**
-     * @param \Illuminate\Contracts\Container\Container $container
-     * @param string $abstract
-     * @param callable|null $resolver
-     */
-    protected function registerSimpleBinding(string $abstract, ?callable $resolver)
-    {
-        $this->container->bind($abstract, $resolver);
     }
 
     /**

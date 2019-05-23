@@ -14,6 +14,14 @@ abstract class ContainerRegistrar implements Registrar
     private $container;
 
     /**
+     * Add resolvers to container
+     * @param callable[] $resolvers
+     * @param \Sayla\ContainerBindings\BindingProvider $provider
+     * @return void
+     */
+    protected abstract function addResolvers(array $resolvers, BindingProvider $provider);
+
+    /**
      * @param \Sayla\ContainerBindings\BindingProvider[] ...$providers
      * @return void
      */
@@ -34,25 +42,6 @@ abstract class ContainerRegistrar implements Registrar
     }
 
     /**
-     * @param \Sayla\ContainerBindings\BindingProvider[] ...$providers
-     * @return void
-     */
-    public function register(BindingProvider ...$providers)
-    {
-        foreach ($providers as $provider) {
-            $this->addResolvers($this->getProviderResolvers($provider), $provider);
-        }
-    }
-
-    /**
-     * Add resolvers to container
-     * @param callable[] $resolvers
-     * @param \Sayla\ContainerBindings\BindingProvider $provider
-     * @return void
-     */
-    protected abstract function addResolvers(array $resolvers, BindingProvider $provider);
-
-    /**
      * @param \Sayla\ContainerBindings\BindingProvider $provider
      * @return callable[]
      */
@@ -67,5 +56,16 @@ abstract class ContainerRegistrar implements Registrar
             }
         }
         return $resolvers;
+    }
+
+    /**
+     * @param \Sayla\ContainerBindings\BindingProvider[] ...$providers
+     * @return void
+     */
+    public function register(BindingProvider ...$providers)
+    {
+        foreach ($providers as $provider) {
+            $this->addResolvers($this->getProviderResolvers($provider), $provider);
+        }
     }
 }

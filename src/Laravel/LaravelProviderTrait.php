@@ -32,20 +32,20 @@ trait LaravelProviderTrait
     /**
      * @param \Illuminate\Contracts\Container\Container $container
      * @param string $abstract
-     */
-    protected function registerSingletonBinding($container, string $abstract, ?callable $resolver)
-    {
-        $container->singleton($abstract, $resolver);
-    }
-
-    /**
-     * @param \Illuminate\Contracts\Container\Container $container
-     * @param string $abstract
      * @param callable|null $resolver
      */
     protected function registerSimpleBinding($container, string $abstract, ?callable $resolver)
     {
         $container->bind($abstract, $resolver);
+    }
+
+    /**
+     * @param \Illuminate\Contracts\Container\Container $container
+     * @param string $abstract
+     */
+    protected function registerSingletonBinding($container, string $abstract, ?callable $resolver)
+    {
+        $container->singleton($abstract, $resolver);
     }
 
     /**

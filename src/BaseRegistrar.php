@@ -5,23 +5,24 @@ namespace Sayla\Support\Bindings;
 abstract class BaseRegistrar implements Registrar
 {
     use RegistrarTrait;
-    protected $useSingletons = false;
     protected $abstracts = [];
     protected $aliases = [];
+    protected $useSingletons = false;
+
+    /**
+     * @param string $abstract
+     * @param null|string $alias
+     */
+    protected function afterBind(string $abstract, ?string $alias)
+    {
+
+    }
 
     public function boot(BindingProvider ...$providers)
     {
         foreach ($providers as $provider)
             foreach ($this->getIncludedBindingAliases($provider) as $alias) {
                 $this->bootProvider($provider, $alias);
-            }
-    }
-
-    public function register(BindingProvider ...$providers)
-    {
-        foreach ($providers as $provider)
-            foreach ($this->getIncludedBindingAliases($provider) as $alias) {
-                $this->registerProvider($provider, $alias);
             }
     }
 
@@ -42,21 +43,13 @@ abstract class BaseRegistrar implements Registrar
         $booter($qualifiedAlias);
     }
 
-    /**
-     * @param \Sayla\Support\Bindings\BindingProvider $provider
-     * @param string $alias
-     */
-    protected function registerProvider(BindingProvider $provider, string $alias): void
+    public function register(BindingProvider ...$providers)
     {
-        $this->abstracts[] = $abstract = $provider->getBindingName($alias) ?? $alias;
-        $this->aliases[] = $containerAlias = $this->aliasPrefix . $alias;
-        $resolver = $provider->getResolver($alias);
-        $isSingleton = $provider->isSingleton($alias);
-        if (!$isSingleton && $this->useSingletons) {
-            $isSingleton = $this->useSingletons;
+        foreach ($providers as $provider) {
+            foreach ($this->getIncludedBindingAliases($provider) as $alias) {
+                $this->registerProvider($provider, $alias);
+            }
         }
-        $this->registerBinding($isSingleton, $abstract, $resolver, $containerAlias);
-        $this->afterBind($abstract, $containerAlias);
     }
 
     /**
@@ -69,12 +62,20 @@ abstract class BaseRegistrar implements Registrar
     protected abstract function registerBinding(bool $isSingleton, string $abstract, $resolver = null, ?string $alias);
 
     /**
-     * @param string $abstract
-     * @param null|string $alias
+     * @param \Sayla\Support\Bindings\BindingProvider $provider
+     * @param string $alias
      */
-    protected function afterBind(string $abstract, ?string $alias)
+    protected function registerProvider(BindingProvider $provider, string $alias): void
     {
-
+        $this->abstracts[] = $abstract = $provider->getBindingName($alias) ?? $alias;
+        $this->aliases[$alias] = $containerAlias = $this->aliasPrefix . $alias;
+        $resolver = $provider->getResolver($alias);
+        $isSingleton = $provider->isSingleton($alias);
+        if (!$isSingleton && $this->useSingletons) {
+            $isSingleton = $this->useSingletons;
+        }
+        $this->registerBinding($isSingleton, $abstract, $resolver, $containerAlias);
+        $this->afterBind($abstract, $containerAlias);
     }
 
     /**

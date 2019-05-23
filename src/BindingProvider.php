@@ -32,44 +32,7 @@ abstract class BindingProvider
     }
 
     /**
-     * @return string[]
-     */
-    public function getBindingAliases(): array
-    {
-        return array_keys($this->getBindings());
-    }
-
-    private function getBindings(): array
-    {
-        if (!isset($this->bindings)) {
-            if (isset(self::$defaultOptions[static::class])) {
-                $options = array_merge(self::$defaultOptions[static::class], $this->unresolvedOptions);
-            } else {
-                $options = $this->unresolvedOptions;
-            }
-            $this->options = $this->getOptionsResolver()->resolve($options);
-            $this->bindings = $this->getBindingSet();
-        }
-        return $this->bindings;
-    }
-
-    private function getOptionsResolver()
-    {
-        $optionsResolver = $this->makeOptionsResolver();
-        $this->configureOptions($optionsResolver);
-        return $optionsResolver;
-    }
-
-    /**
-     * @return OptionsResolver
-     */
-    protected function makeOptionsResolver(): OptionsResolver
-    {
-        return new OptionsResolver();
-    }
-
-    /**
-     * @param  OptionsResolver $optionsResolver
+     * @param OptionsResolver $optionsResolver
      */
     protected function configureOptions($optionsResolver): void
     {
@@ -77,35 +40,12 @@ abstract class BindingProvider
     }
 
     /**
-     * Returns an array of binding to be added to a container
-     * format:
-     *  [<alias:string> => [
-     *      <abstractName:string>,
-     *      [resolverCallback:Closure],
-     *      [bootCallback:Closure],
-     *      [isSingleton:bool]
-     *      ]
-     *  ];
-     * registrar only: ['bookFactory' => [
-     *      BookFactory::class,
-     *      function(){ return new BookFactory(); }
-     *      ]
-     *  ];
-     * registrar and booter: ['bookFactory' => [
-     *      BookFactory::class,
-     *      function(){ return new BookFactory(); },
-     *      function($container){ $container->get(BookFactory::class)->requireAuthorLastName(); },
-     *      ]
-     *  ];
-     * registrar and booter using alias: ['bookFactory' => [
-     *      BookFactory::class,
-     *      function(){ return new BookFactory(); },
-     *      function($container, string $qualifiedAlias){ $container->get($qualifiedAlias)->requireAuthorLastName(); },
-     *      ]
-     *  ];
-     * @return array
+     * @return string[]
      */
-    protected abstract function getBindingSet(): array;
+    public function getBindingAliases(): array
+    {
+        return array_keys($this->getBindings());
+    }
 
     public function getBindingName(string $alias)
     {
@@ -120,6 +60,37 @@ abstract class BindingProvider
     {
         return array_keys($this->getBindings());
     }
+
+    /**
+     * Returns an array of binding to be added to a container
+     * format:
+     *  [<alias:string> => [
+     *      <abstractName:string>,
+     *      [resolverCallback:Closure],
+     *      [bootCallback:Closure],
+     *      [singleton:bool]
+     *      ]
+     *  ];
+     * resolver only: ['bookFactory' => [
+     *      BookFactory::class,
+     *      function(){ return new BookFactory(); }
+     *      ]
+     *  ];
+     * resolver and booter: ['bookFactory' => [
+     *      BookFactory::class,
+     *      function(){ return new BookFactory(); },
+     *      function($container){ $container->get(BookFactory::class)->requireAuthorLastName(); },
+     *      ]
+     *  ];
+     * resolver and booter using alias: ['bookFactory' => [
+     *      BookFactory::class,
+     *      function(){ return new BookFactory(); },
+     *      function($container, string $qualifiedAlias){ $container->get($qualifiedAlias)->requireAuthorLastName(); },
+     *      ]
+     *  ];
+     * @return array
+     */
+    protected abstract function getBindingSet(): array;
 
     public function getBooter(string $alias): ?\Closure
     {
@@ -136,6 +107,14 @@ abstract class BindingProvider
     public function isSingleton(string $alias): bool
     {
         return $this->getBindings()[$alias][3] ?? $this->getBindings()[$alias]['singleton'] ?? false;
+    }
+
+    /**
+     * @return OptionsResolver
+     */
+    protected function makeOptionsResolver(): OptionsResolver
+    {
+        return new OptionsResolver();
     }
 
     public function mergeOptions(array $options)
@@ -159,5 +138,26 @@ abstract class BindingProvider
     {
         $this->unresolvedOptions = $options;
         return $this;
+    }
+
+    private function getBindings(): array
+    {
+        if (!isset($this->bindings)) {
+            if (isset(self::$defaultOptions[static::class])) {
+                $options = array_merge(self::$defaultOptions[static::class], $this->unresolvedOptions);
+            } else {
+                $options = $this->unresolvedOptions;
+            }
+            $this->options = $this->getOptionsResolver()->resolve($options);
+            $this->bindings = $this->getBindingSet();
+        }
+        return $this->bindings;
+    }
+
+    private function getOptionsResolver()
+    {
+        $optionsResolver = $this->makeOptionsResolver();
+        $this->configureOptions($optionsResolver);
+        return $optionsResolver;
     }
 }

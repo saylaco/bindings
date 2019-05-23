@@ -8,26 +8,22 @@ use Illuminate\Support\ServiceProvider;
 abstract class LaravelServiceProvider extends ServiceProvider
 {
     private $bindingProvider;
-
-    protected abstract function getBindingProvider();
-
-    public function boot()
-    {
-        $this->bindingRegistrar()->boot($this->bindingProvider());
-    }
+    private $registrar;
 
     /**
      * @return \Sayla\Support\Bindings\Laravel\LaravelRegistrar
      */
     protected function bindingRegistrar()
     {
-        return LaravelRegistrar::getInstance($this->app);
+        return $this->registrar ?? $this->registrar = LaravelRegistrar::getInstance($this->app);
     }
 
-    private function bindingProvider()
+    public function boot()
     {
-        return $this->bindingProvider ?? $this->bindingProvider = $this->makeBindingProvider();
+        $this->bindingRegistrar()->boot($this->bindingProvider());
     }
+
+    protected abstract function getBindingProvider();
 
     /**
      * @return \Sayla\Support\Bindings\BindingProvider
@@ -53,5 +49,10 @@ abstract class LaravelServiceProvider extends ServiceProvider
     public function register()
     {
         $this->bindingRegistrar()->register($this->bindingProvider());
+    }
+
+    private function bindingProvider()
+    {
+        return $this->bindingProvider ?? $this->bindingProvider = $this->makeBindingProvider();
     }
 }

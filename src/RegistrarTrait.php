@@ -5,12 +5,12 @@ namespace Sayla\Support\Bindings;
 trait RegistrarTrait
 {
 
+    /**  @var string */
+    private $aliasPrefix = '';
     /** @var string[] */
     private $excluded = [];
     /** @var string[] */
     private $included = [];
-    /**  @var string */
-    private $aliasPrefix = '';
 
     public function exclude(string $alias)
     {
