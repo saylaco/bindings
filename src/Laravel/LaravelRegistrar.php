@@ -5,6 +5,8 @@ namespace Sayla\Support\Bindings\Laravel;
 use Illuminate\Contracts\Container\Container;
 use Sayla\Support\Bindings\BaseRegistrar;
 use Sayla\Support\Bindings\BindingProvider;
+use Sayla\Support\Bindings\Contract\RunsOnBoot;
+use Sayla\Support\Bindings\Contract\RunsAfterBoot;
 
 
 class LaravelRegistrar extends BaseRegistrar
@@ -39,10 +41,10 @@ class LaravelRegistrar extends BaseRegistrar
     {
         if ($this->container instanceof \Illuminate\Contracts\Foundation\Application) {
             foreach ($providers as $provider) {
-                if (method_exists($provider, 'booted')) {
+                if ($provider instanceof RunsAfterBoot) {
                     $this->container->booted([$provider, 'booted']);
                 }
-                if (method_exists($provider, 'booting')) {
+                if ($provider instanceof RunsOnBoot) {
                     $this->container->booting(function () use ($provider) {
                         call_user_func([$provider, 'booting'], $this->container, $this->aliases);
                     });

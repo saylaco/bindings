@@ -9,15 +9,6 @@ abstract class BaseRegistrar implements Registrar
     protected $aliases = [];
     protected $useSingletons = false;
 
-    /**
-     * @param string $abstract
-     * @param null|string $alias
-     */
-    protected function afterBind(string $abstract, ?string $alias)
-    {
-
-    }
-
     public function boot(BindingProvider ...$providers)
     {
         foreach ($providers as $provider)
@@ -32,7 +23,7 @@ abstract class BaseRegistrar implements Registrar
      */
     protected function bootProvider(BindingProvider $provider, string $alias): void
     {
-        $booter = $provider->getBooter($alias);
+        $booter = $provider->getBinding($alias)['booter'];
         if ($booter != null) {
             $this->callBooter($booter, $this->aliasPrefix . $alias);
         }
@@ -67,15 +58,11 @@ abstract class BaseRegistrar implements Registrar
      */
     protected function registerProvider(BindingProvider $provider, string $alias): void
     {
-        $this->abstracts[] = $abstract = $provider->getBindingName($alias) ?? $alias;
+        $binding = $provider->getBinding($alias);
+        $this->abstracts[] = $abstract = $binding['name'] ?: $alias;
         $this->aliases[$alias] = $containerAlias = $this->aliasPrefix . $alias;
-        $resolver = $provider->getResolver($alias);
-        $isSingleton = $provider->isSingleton($alias);
-        if (!$isSingleton && $this->useSingletons) {
-            $isSingleton = $this->useSingletons;
-        }
-        $this->registerBinding($isSingleton, $abstract, $resolver, $containerAlias);
-        $this->afterBind($abstract, $containerAlias);
+        $isSingleton = $binding['singleton'] || $this->useSingletons;
+        $this->registerBinding($binding['singleton'], $abstract, $binding['resolver'], $containerAlias);
     }
 
     /**

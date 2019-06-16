@@ -23,7 +23,7 @@ trait RegistrarTrait
      */
     public function getIncludedBindingAliases(BindingProvider $provider)
     {
-        $bindingAliases = $provider->getBindingNames();
+        $bindingAliases = $provider->getBindingAliases();
         if (empty($this->included)) {
             if (!empty($this->excluded)) {
                 return array_diff($bindingAliases, $this->excluded);

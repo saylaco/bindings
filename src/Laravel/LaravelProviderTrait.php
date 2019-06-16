@@ -26,7 +26,6 @@ trait LaravelProviderTrait
         } else {
             $this->registerSimpleBinding($container, $abstract, $resolver);
         }
-        $this->afterBind($abstract, $alias);
     }
 
     /**
