@@ -5,7 +5,7 @@
         <abstractName:string>,
         [resolverCallback:Closure],
         [bootCallback:Closure],
-        [isSingleton:bool]
+        [singleton:bool]
     ]
 ]
 ```

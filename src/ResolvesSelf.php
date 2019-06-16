@@ -8,7 +8,11 @@ trait ResolvesSelf
 {
     protected abstract static function resolutionBinding(): string;
 
-    public static function resolve(): self
+    /**
+     * @return static
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public final static function resolve()
     {
         return Container::getInstance()->make(static::resolutionBinding());
     }
