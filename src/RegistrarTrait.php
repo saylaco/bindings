@@ -19,6 +19,23 @@ trait RegistrarTrait
     }
 
     /**
+     * @return string
+     */
+    public function getAliasPrefix(): string
+    {
+        return $this->aliasPrefix;
+    }
+
+    /**
+     * @param string $aliasPrefix
+     */
+    public function setAliasPrefix(string $aliasPrefix)
+    {
+        $this->aliasPrefix = $aliasPrefix;
+        return $this;
+    }
+
+    /**
      * @return string[]
      */
     public function getIncludedBindingKeys(BindingProvider $provider)
@@ -37,23 +54,6 @@ trait RegistrarTrait
     {
         $this->included[] = $alias;
         return $this;
-    }
-
-    /**
-     * @param string $aliasPrefix
-     */
-    public function setAliasPrefix(string $aliasPrefix)
-    {
-        $this->aliasPrefix = $aliasPrefix;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAliasPrefix(): string
-    {
-        return $this->aliasPrefix;
     }
 
 }

@@ -5,8 +5,8 @@ namespace Sayla\Support\Bindings\Laravel;
 use Illuminate\Contracts\Container\Container;
 use Sayla\Support\Bindings\BaseRegistrar;
 use Sayla\Support\Bindings\BindingProvider;
-use Sayla\Support\Bindings\Contract\RunsOnBoot;
 use Sayla\Support\Bindings\Contract\RunsAfterBoot;
+use Sayla\Support\Bindings\Contract\RunsOnBoot;
 
 
 class LaravelRegistrar extends BaseRegistrar

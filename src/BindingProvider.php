@@ -33,17 +33,14 @@ abstract class BindingProvider
     }
 
     /**
+     * @param OptionsResolver $optionsResolver
+     */
+    protected abstract function configureOptions($optionsResolver): void;
+
+    /**
      * @param \Sayla\Support\Bindings\BindingSetBuilder $setBuilder
      */
     protected abstract function defineBindings($setBuilder);
-
-    /**
-     * @param OptionsResolver $optionsResolver
-     */
-    protected function configureOptions($optionsResolver): void
-    {
-
-    }
 
     /**
      * @return string

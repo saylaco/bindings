@@ -22,6 +22,11 @@ interface Registrar
     public function exclude(string $alias);
 
     /**
+     * @return string|null
+     */
+    public function getAliasPrefix(): ?string;
+
+    /**
      * @return string[]
      */
     public function getIncludedBindingKeys(BindingProvider $provider);
@@ -42,10 +47,5 @@ interface Registrar
      * @return $this
      */
     public function setAliasPrefix(string $aliasPrefix);
-
-    /**
-     * @return string|null
-     */
-    public function getAliasPrefix() : ?string;
 
 }
