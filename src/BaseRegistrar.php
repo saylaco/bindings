@@ -11,10 +11,12 @@ abstract class BaseRegistrar implements Registrar
 
     public function boot(BindingProvider ...$providers)
     {
-        foreach ($providers as $provider)
-            foreach ($this->getIncludedBindingAliases($provider) as $alias) {
-                $this->bootProvider($provider, $alias);
+        foreach ($providers as $provider) {
+            $provider->setAliasPrefix($this->aliasPrefix);
+            foreach ($this->getIncludedBindingKeys($provider) as $key) {
+                $this->bootProvider($provider, $key);
             }
+        }
     }
 
     /**
@@ -23,9 +25,10 @@ abstract class BaseRegistrar implements Registrar
      */
     protected function bootProvider(BindingProvider $provider, string $alias): void
     {
-        $booter = $provider->getBinding($alias)['booter'];
+        $binding = $provider->getBinding($alias);
+        $booter = $binding['booter'];
         if ($booter != null) {
-            $this->callBooter($booter, $this->aliasPrefix . $alias);
+            $this->callBooter($booter, $binding['alias']);
         }
     }
 
@@ -34,11 +37,21 @@ abstract class BaseRegistrar implements Registrar
         $booter($qualifiedAlias);
     }
 
+    /**
+     * @param \Sayla\Support\Bindings\BindingProvider $provider
+     * @return striing[]
+     */
+    public function getAliases(BindingProvider $provider)
+    {
+        return $this->aliases[spl_object_id($provider)] ?? [];
+    }
+
     public function register(BindingProvider ...$providers)
     {
         foreach ($providers as $provider) {
-            foreach ($this->getIncludedBindingAliases($provider) as $alias) {
-                $this->registerProvider($provider, $alias);
+            $provider->setAliasPrefix($this->getAliasPrefix());
+            foreach ($this->getIncludedBindingKeys($provider) as $key) {
+                $this->registerProvider($provider, $key);
             }
         }
     }
@@ -56,13 +69,13 @@ abstract class BaseRegistrar implements Registrar
      * @param \Sayla\Support\Bindings\BindingProvider $provider
      * @param string $alias
      */
-    protected function registerProvider(BindingProvider $provider, string $alias): void
+    protected function registerProvider(BindingProvider $provider, string $key): void
     {
-        $binding = $provider->getBinding($alias);
-        $this->abstracts[] = $abstract = $binding['name'] ?: $alias;
-        $this->aliases[$alias] = $containerAlias = $this->aliasPrefix . $alias;
+        $binding = $provider->getBinding($key);
+        $this->abstracts[] = $abstract = $binding['name'];
+        $this->aliases[spl_object_id($provider)][$key] = $binding['alias'];
         $isSingleton = $binding['singleton'] || $this->useSingletons;
-        $this->registerBinding($binding['singleton'], $abstract, $binding['resolver'], $containerAlias);
+        $this->registerBinding($binding['singleton'], $abstract, $binding['resolver'], $binding['alias']);
     }
 
     /**

@@ -41,13 +41,13 @@ class LaravelRegistrar extends BaseRegistrar
     {
         if ($this->container instanceof \Illuminate\Contracts\Foundation\Application) {
             foreach ($providers as $provider) {
-                if ($provider instanceof RunsAfterBoot) {
-                    $this->container->booted([$provider, 'booted']);
-                }
                 if ($provider instanceof RunsOnBoot) {
                     $this->container->booting(function () use ($provider) {
-                        call_user_func([$provider, 'booting'], $this->container, $this->aliases);
+                        call_user_func([$provider, 'booting'], $this->container, $this->getAliases($provider));
                     });
+                }
+                if ($provider instanceof RunsAfterBoot) {
+                    $this->container->booted([$provider, 'booted']);
                 }
             }
         }

@@ -8,6 +8,7 @@ abstract class BindingProvider
 {
     private static $defaultOptions = [];
     protected $abstracts = [];
+    private $aliasPrefix = '';
     private $bindings;
     private $options = [];
     private $unresolvedOptions = [];
@@ -32,11 +33,34 @@ abstract class BindingProvider
     }
 
     /**
+     * @param \Sayla\Support\Bindings\BindingSetBuilder $setBuilder
+     */
+    protected abstract function defineBindings($setBuilder);
+
+    /**
      * @param OptionsResolver $optionsResolver
      */
     protected function configureOptions($optionsResolver): void
     {
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getAliasPrefix(): string
+    {
+        return $this->aliasPrefix;
+    }
+
+    /**
+     * @param string $aliasPrefix
+     * @return $this
+     */
+    public function setAliasPrefix(string $aliasPrefix)
+    {
+        $this->aliasPrefix = $aliasPrefix;
+        return $this;
     }
 
     /**
@@ -51,16 +75,10 @@ abstract class BindingProvider
     /**
      * @return string[]
      */
-    public function getBindingAliases(): array
+    public function getBindingKeys(): array
     {
         return array_keys($this->getBindings());
     }
-
-    /**
-     * @param \Sayla\Support\Bindings\BindingSetBuilder $setBuilder
-     * @return array
-     */
-    protected abstract function getBindingSet($setBuilder): array;
 
     /**
      * @return OptionsResolver
@@ -102,7 +120,9 @@ abstract class BindingProvider
                 $options = $this->unresolvedOptions;
             }
             $this->options = $this->getOptionsResolver()->resolve($options);
-            $this->bindings = $this->getBindingSet(BindingSetBuilder::make());
+            $setBuilder = BindingSetBuilder::make($this->getAliasPrefix());
+            $this->defineBindings($setBuilder);
+            $this->bindings = $setBuilder->getBindings();
         }
         return $this->bindings;
     }

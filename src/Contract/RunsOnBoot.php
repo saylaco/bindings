@@ -6,7 +6,7 @@ interface RunsOnBoot
 {
     /**
      * @param \Psr\Container\ContainerInterface $container
-     * @param string[] $qualifiedAliases
+     * @param string[] $aliases
      */
-    public function booting($container, $qualifiedAliases): void;
+    public function booting($container, $aliases): void;
 }

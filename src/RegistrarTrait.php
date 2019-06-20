@@ -21,14 +21,14 @@ trait RegistrarTrait
     /**
      * @return string[]
      */
-    public function getIncludedBindingAliases(BindingProvider $provider)
+    public function getIncludedBindingKeys(BindingProvider $provider)
     {
-        $bindingAliases = $provider->getBindingAliases();
+        $bindingKeys = $provider->getBindingKeys();
         if (empty($this->included)) {
             if (!empty($this->excluded)) {
-                return array_diff($bindingAliases, $this->excluded);
+                return array_diff($bindingKeys, $this->excluded);
             }
-            return $bindingAliases;
+            return $bindingKeys;
         }
         return $this->included;
     }
@@ -46,6 +46,14 @@ trait RegistrarTrait
     {
         $this->aliasPrefix = $aliasPrefix;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAliasPrefix(): string
+    {
+        return $this->aliasPrefix;
     }
 
 }

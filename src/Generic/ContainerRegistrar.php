@@ -28,7 +28,7 @@ abstract class ContainerRegistrar implements Registrar
     public function boot(BindingProvider ...$providers)
     {
         foreach ($providers as $provider) {
-            foreach ($this->getIncludedBindingAliases($provider) as $alias) {
+            foreach ($this->getIncludedBindingKeys($provider) as $alias) {
                 if ($booter = $provider->getBooter($alias)) {
                     $this->callBooter($booter, $this->aliasPrefix . $alias);
                 }
@@ -48,7 +48,7 @@ abstract class ContainerRegistrar implements Registrar
     protected function getProviderResolvers(BindingProvider $provider): array
     {
         $resolvers = [];
-        foreach ($this->getIncludedBindingAliases($provider) as $alias) {
+        foreach ($this->getIncludedBindingKeys($provider) as $alias) {
             $resolver = $provider->getResolver($alias);
             $resolvers[$this->aliasPrefix . $alias] = $resolver;
             if ($name = $provider->getBindingName($alias)) {

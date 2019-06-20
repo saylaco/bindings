@@ -5,23 +5,44 @@ namespace Sayla\Support\Bindings;
 class BindingSetBuilder
 {
     private $_current = null;
+    private $aliasPrefix = null;
     private $bindings = [];
 
-    public static function make(): self
+    /**
+     * @param string $aliasPrefix
+     * @return $this
+     */
+    public function __construct(string $aliasPrefix = null)
     {
-        return new self();
+        $this->aliasPrefix = $aliasPrefix;
     }
 
-    public function add(string $alias, string $name, \Closure $resolver = null)
+    public static function make(string $aliasPrefix = null): self
     {
-        $this->_current = $alias;
-        $this->bindings[$alias] = ['name' => $name, 'resolver' => $resolver, 'booter' => null, 'singleton' => true];
+        return new self($aliasPrefix);
+    }
+
+    public function __get($key): string
+    {
+        return $this->getAlias($key);
+    }
+
+    public function add(string $key, string $name, \Closure $resolver = null)
+    {
+        $this->_current = $key;
+        $this->bindings[$key] = [
+            'name' => $name,
+            'alias' => $this->getAlias($key),
+            'resolver' => $resolver ? $resolver->bindTo($this) : $resolver,
+            'booter' => null,
+            'singleton' => true
+        ];
         return $this;
     }
 
-    public function addInstance(string $alias, string $name, \Closure $resolver = null)
+    public function addInstance(string $key, string $name, \Closure $resolver = null)
     {
-        return $this->add($alias, $name, $resolver)->asSingleton(false);
+        return $this->add($key, $name, $resolver)->asSingleton(false);
     }
 
     public function asSingleton($isSingleton = true)
@@ -34,6 +55,12 @@ class BindingSetBuilder
     {
         $this->current()['booter'] = $booter;
         return $this;
+    }
+
+    public function getAlias(string $alias)
+    {
+        return $this->aliasPrefix . $alias;
+
     }
 
     public function getBindings(): array

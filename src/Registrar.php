@@ -24,7 +24,7 @@ interface Registrar
     /**
      * @return string[]
      */
-    public function getIncludedBindingAliases(BindingProvider $provider);
+    public function getIncludedBindingKeys(BindingProvider $provider);
 
     /**
      * @param string $alias
@@ -42,5 +42,10 @@ interface Registrar
      * @return $this
      */
     public function setAliasPrefix(string $aliasPrefix);
+
+    /**
+     * @return string|null
+     */
+    public function getAliasPrefix() : ?string;
 
 }
