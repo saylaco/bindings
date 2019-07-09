@@ -46,6 +46,18 @@ abstract class BaseRegistrar implements Registrar
         return $this->aliases[spl_object_id($provider)] ?? [];
     }
 
+    /**
+     * @return striing[]
+     */
+    public function getAllAliases()
+    {
+        $aliases = [];
+        foreach ($this->aliases as $_aliases) {
+            $aliases = array_merge($aliases, $_aliases);
+        }
+        return $aliases;
+    }
+
     public function register(BindingProvider ...$providers)
     {
         foreach ($providers as $provider) {

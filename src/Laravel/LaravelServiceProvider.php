@@ -36,7 +36,7 @@ abstract class LaravelServiceProvider extends ServiceProvider
     public function provides()
     {
         return array_unique([
-            $this->bindingRegistrar()->getBindingKeys(),
+            $this->bindingRegistrar()->getAllAliases(),
             $this->bindingRegistrar()->getAbstractNames()
         ]);
     }

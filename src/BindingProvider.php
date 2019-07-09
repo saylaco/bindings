@@ -64,9 +64,9 @@ abstract class BindingProvider
      * @param string $alias
      * @return array
      */
-    public function getBinding(string $alias): array
+    public function getBinding(string $key): array
     {
-        return $this->getBindings()[$alias];
+        return $this->getBindings()[$key];
     }
 
     /**
